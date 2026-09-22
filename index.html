@@ -3,24 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Xenon Arcade - Hub Digital & OSTs</title>
+  <title>Xenon Arcade - Hub 4D</title>
   <style>
     :root {
-      --bg-color: #0d0d13;
-      --card-bg: #161622;
-      --accent-pink: #ff007f;
-      --accent-cyan: #00e5ff;
-      --accent-green: #00ff9d;
-      --text-main: #f0f0f5;
-      --text-muted: #a0a0b0;
-      --border-color: #262638;
+      --bg-color: #050807;
+      --card-bg: rgba(10, 20, 15, 0.85);
+      --accent-green: #00ff66;
+      --border-color: #1a3a2a;
+      --text-main: #e0f5ea;
+      --text-muted: #7aa38e;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Courier New', Courier, monospace;
     }
 
     body {
@@ -30,35 +28,27 @@
     }
 
     header {
-      background: linear-gradient(180deg, #181828 0%, #0d0d13 100%);
-      padding: 2rem 1rem;
+      padding: 2rem 1rem 1rem;
       text-align: center;
-      border-bottom: 1px solid var(--border-color);
     }
 
     header h1 {
-      font-size: 2.2rem;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
-    }
-
-    header p {
-      color: var(--accent-cyan);
-      font-size: 0.95rem;
-      margin-top: 5px;
+      font-size: 2rem;
+      color: var(--accent-green);
+      letter-spacing: 4px;
+      text-shadow: 0 0 12px var(--accent-green);
     }
 
     nav {
       display: flex;
       justify-content: center;
       gap: 10px;
-      background-color: #12121c;
       padding: 10px;
       position: sticky;
       top: 0;
       z-index: 100;
+      background: rgba(5, 8, 7, 0.95);
+      backdrop-filter: blur(5px);
       border-bottom: 1px solid var(--border-color);
       overflow-x: auto;
     }
@@ -68,26 +58,25 @@
       border: 1px solid var(--border-color);
       color: var(--text-muted);
       padding: 8px 16px;
-      border-radius: 20px;
+      border-radius: 4px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
+      font-weight: bold;
+      letter-spacing: 1px;
       transition: all 0.3s ease;
       white-space: nowrap;
     }
 
     nav button.active, nav button:hover {
-      background-color: var(--accent-cyan);
+      background-color: var(--accent-green);
       color: #000;
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+      border-color: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
     }
 
-    container {
+    .container {
       max-width: 800px;
       margin: 20px auto;
       padding: 0 15px;
-      display: block;
     }
 
     .tab-section {
@@ -98,172 +87,133 @@
       display: block;
     }
 
-    .section-title {
-      font-size: 1.4rem;
-      margin-bottom: 10px;
-      color: var(--accent-cyan);
-      border-left: 4px solid var(--accent-pink);
-      padding-left: 10px;
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-green);
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.05);
     }
 
-    .card {
-      background-color: var(--card-bg);
-      border-radius: 8px;
-      padding: 1.2rem;
-      margin-bottom: 1.2rem;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    .card h2, .card h3 {
+      color: #fff;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
     }
 
     .card-tag {
       display: inline-block;
-      font-size: 0.7rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 4px;
-      border: 1px solid var(--accent-cyan);
-      color: var(--accent-cyan);
-      margin-bottom: 8px;
+      font-size: 0.75rem;
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      padding: 2px 6px;
+      margin-bottom: 10px;
+      border-radius: 3px;
+    }
+
+    p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
     }
 
     audio {
       width: 100%;
-      margin-top: 10px;
-      border-radius: 6px;
-      filter: invert(0.9) hue-rotate(120deg);
+      margin-top: 15px;
+      filter: invert(0.9) hue-rotate(80deg);
       outline: none;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      color: var(--text-muted);
-      font-size: 0.8rem;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>XENON ARCADE</h1>
-    <p>Hub Oficial & Trilhas Sonoras</p>
+    <h1>XENON // 4D</h1>
   </header>
 
   <nav>
-    <button class="nav-btn active" onclick="openTab('inicio')">Início</button>
-    <button class="nav-btn" onclick="openTab('jogos')">Jogos</button>
+    <button class="nav-btn active" onclick="openTab('inicio')">INÍCIO</button>
+    <button class="nav-btn" onclick="openTab('noticias')">NOTÍCIAS GAMING</button>
     <button class="nav-btn" onclick="openTab('ost')">GAME OSTs</button>
   </nav>
 
-  <container>
-    <!-- 1. INÍCIO -->
+  <div class="container">
+    <!-- INÍCIO -->
     <section id="inicio" class="tab-section active">
-      <h2 class="section-title">BEM-VINDO AO XENON ARCADE</h2>
       <div class="card">
-        <p>Explora os nossos jogos, ouve as faixas sonoras oficiais e acompanha todos os lançamentos diretamente aqui.</p>
+        <h2>// BEM-VINDO AO XENON ARCADE</h2>
+        <p>Um ecossistema futurista focado no desenvolvimento de jogos, inteligência artificial avançada e cultura gamer. Navega pelos menus superiores para explorar cada secção interativa.</p>
+      </div>
+      <div class="card">
+        <span class="card-tag">3D ENGINE</span>
+        <h3>Fundo Holográfico 4D</h3>
+        <p>Mexe o rato ou faz scroll para interagir com o ambiente cibernético.</p>
       </div>
     </section>
 
-    <!-- 2. JOGOS -->
-    <section id="jogos" class="tab-section">
-      <h2 class="section-title">// JOGOS EM DESENVOLVIMENTO</h2>
+    <!-- NOTÍCIAS -->
+    <section id="noticias" class="tab-section">
       <div class="card">
-        <span class="card-tag">EM BREVE</span>
-        <h3>Project Xenon</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Jogo arcade futurista em desenvolvimento.</p>
+        <h2>// ÚLTIMAS ATUALIZAÇÕES</h2>
+        <p>Acompanha em tempo real as novidades sobre o desenvolvimento dos nossos projetos e lançamentos oficiais.</p>
       </div>
     </section>
 
-    <!-- 3. OST DE GAME (LEITOR DE MÚSICA COMPLETO) -->
+    <!-- GAME OSTs (LEITOR DE ÁUDIO CORRIGIDO) -->
     <section id="ost" class="tab-section">
-      <h2 class="section-title">// GAMING SOUNDTRACKS (OSTs)</h2>
-      <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
-        Ouve aqui todas as músicas guardadas na pasta <code>áudio/</code> do repositório.
-      </p>
+      <div class="card">
+        <h2>// TRILHAS SONORAS (OSTs)</h2>
+        <p>Ouve abaixo as composições oficiais guardadas na pasta do projeto.</p>
+      </div>
 
-      <!-- FAIXA 1 -->
-      <div class="card" style="border-left: 4px solid var(--accent-pink);">
-        <span class="card-tag" style="color: var(--accent-pink); border-color: var(--accent-pink);">OFICIAL</span>
-        <h3 style="color: #fff;">01. Abaixo da Mesma Lua</h3>
-        <p style="color: var(--accent-cyan); font-size: 0.85rem; margin-top: 2px;">Estilo: Synthwave / Ambient</p>
+      <div class="card">
+        <span class="card-tag">TRACK 01</span>
+        <h3>Abaixo da Mesma Lua</h3>
         <audio controls>
-          <source src="áudio/Abaixo%20da%20mesma%20lua.mp3" type="audio/mpeg">
+          <source src="áudio/Abaixo da mesma lua.mp3" type="audio/mpeg">
           O teu navegador não suporta o leitor de áudio.
         </audio>
       </div>
 
-      <!-- FAIXA 2 -->
-      <div class="card" style="border-left: 4px solid var(--accent-cyan);">
-        <span class="card-tag">SINGLE</span>
-        <h3 style="color: #fff;">02. Druna Até Aos Céus</h3>
-        <p style="color: var(--accent-cyan); font-size: 0.85rem; margin-top: 2px;">Estilo: Cyberpunk OST</p>
+      <div class="card">
+        <span class="card-tag">TRACK 02</span>
+        <h3>Druna Até Aos Céus</h3>
         <audio controls>
-          <source src="áudio/Druna%20at%C3%A9%20aos%20ceus.mp3" type="audio/mpeg">
+          <source src="áudio/Druna até aos ceus.mp3" type="audio/mpeg">
           O teu navegador não suporta o leitor de áudio.
         </audio>
       </div>
 
-      <!-- FAIXA 3 -->
-      <div class="card" style="border-left: 4px solid var(--accent-cyan);">
-        <span class="card-tag">SINGLE (V2)</span>
-        <h3 style="color: #fff;">03. Druna Até Aos Céus (V2)</h3>
-        <p style="color: var(--accent-cyan); font-size: 0.85rem; margin-top: 2px;">Estilo: Cyberpunk / Remix</p>
+      <div class="card">
+        <span class="card-tag">TRACK 03</span>
+        <h3>Latarim D'Alma</h3>
         <audio controls>
-          <source src="áudio/Druna%20at%C3%A9%20os%20ceusV2.mp3" type="audio/mpeg">
+          <source src="áudio/Latarim D'Alma .mp3" type="audio/mpeg">
           O teu navegador não suporta o leitor de áudio.
         </audio>
       </div>
 
-      <!-- FAIXA 4 -->
-      <div class="card" style="border-left: 4px solid var(--accent-green);">
-        <span class="card-tag" style="color: var(--accent-green); border-color: var(--accent-green);">SINGLE</span>
-        <h3 style="color: #fff;">04. Latarim D'Alma</h3>
-        <p style="color: var(--accent-cyan); font-size: 0.85rem; margin-top: 2px;">Estilo: Game Ambient</p>
+      <div class="card">
+        <span class="card-tag">TRACK 04</span>
+        <h3>Aço Sob Sol Morto</h3>
         <audio controls>
-          <source src="áudio/Latarim%20D'Alma%20.mp3" type="audio/mpeg">
+          <source src="áudio/aco sob sol morto.mp3" type="audio/mpeg">
           O teu navegador não suporta o leitor de áudio.
         </audio>
       </div>
 
-      <!-- FAIXA 5 -->
-      <div class="card" style="border-left: 4px solid var(--accent-pink);">
-        <span class="card-tag" style="color: var(--accent-pink); border-color: var(--accent-pink);">SINGLE</span>
-        <h3 style="color: #fff;">05. Aço Sob Sol Morto</h3>
-        <p style="color: var(--accent-cyan); font-size: 0.85rem; margin-top: 2px;">Estilo: Dark Electro / Arcade</p>
+      <div class="card">
+        <span class="card-tag">TRACK 05</span>
+        <h3>Onde Se Tempo Se Perdeu</h3>
         <audio controls>
-          <source src="áudio/aco%20sob%20sol%20morto.mp3" type="audio/mpeg">
-          O teu navegador não suporta o leitor de áudio.
-        </audio>
-      </div>
-
-      <!-- FAIXA 6 -->
-      <div class="card" style="border-left: 4px solid var(--accent-cyan);">
-        <span class="card-tag">SINGLE</span>
-        <h3 style="color: #fff;">06. Onde Se Tempo Se Perdeu</h3>
-        <p style="color: var(--accent-cyan); font-size: 0.85rem; margin-top: 2px;">Estilo: Retro Synth</p>
-        <audio controls>
-          <source src="áudio/onde%20se%20tempo%20se%20perdeu.mp3" type="audio/mpeg">
-          O teu navegador não suporta o leitor de áudio.
-        </audio>
-      </div>
-
-      <!-- FAIXA 7 -->
-      <div class="card" style="border-left: 4px solid var(--accent-green);">
-        <span class="card-tag" style="color: var(--accent-green); border-color: var(--accent-green);">SPECIAL TRACK</span>
-        <h3 style="color: #fff;">07. 嵐の中の心音 (Heartbeat in the Storm)</h3>
-        <p style="color: var(--accent-cyan); font-size: 0.85rem; margin-top: 2px;">Estilo: Oriental Cyber Synth</p>
-        <audio controls>
-          <source src="áudio/%E5%B5%90%E3%81%AE%E4%B8%AD%E3%81%AE%E5%BF%83%E9%9F%B3.mp3" type="audio/mpeg">
+          <source src="áudio/onde se tempo se perdeu.mp3" type="audio/mpeg">
           O teu navegador não suporta o leitor de áudio.
         </audio>
       </div>
     </section>
-  </container>
-
-  <footer>
-    <p>&copy; 2026 Xenon Arcade. Todos os direitos reservados.</p>
-  </footer>
+  </div>
 
   <script>
     function openTab(tabName) {
