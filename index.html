@@ -3,229 +3,594 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Xenon Arcade - Hub 4D</title>
-  <style>
-    :root {
-      --bg-color: #050807;
-      --card-bg: rgba(10, 20, 15, 0.85);
-      --accent-green: #00ff66;
-      --border-color: #1a3a2a;
-      --text-main: #e0f5ea;
-      --text-muted: #7aa38e;
-    }
+  <title>XENON // ARCADE 4D</title>
+  
+  <!-- Three.js Library para efeitos 3D/4D -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
+  <style>
+    /* RESET & VARIÁVEIS GLOBAIS */
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Courier New', Courier, monospace;
+      box-sizing: border-box;
+      font-family: 'Consolas', 'Courier New', monospace;
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      padding-bottom: 40px;
+      background-color: #030305;
+      color: #00ff9d;
+      overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    header {
-      padding: 2rem 1rem 1rem;
+    /* CANVAS 3D/4D NO FUNDO (X GIGANTE ANIMADO) */
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ECRÃ DE CARREGAMENTO */
+    #cyber-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #030305;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #cyber-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-content {
       text-align: center;
     }
 
-    header h1 {
-      font-size: 2rem;
-      color: var(--accent-green);
-      letter-spacing: 4px;
-      text-shadow: 0 0 12px var(--accent-green);
+    .glitch-title {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: 6px;
+      color: #00ff9d;
+      text-shadow: 0 0 15px #00ff9d, 0 0 30px #00e5ff;
+      margin-bottom: 1.5rem;
+      animation: pulseGlitch 1.2s infinite alternate;
+    }
+
+    @keyframes pulseGlitch {
+      0% { transform: scale(1); text-shadow: 0 0 10px #00ff9d; }
+      100% { transform: scale(1.05); text-shadow: 0 0 25px #ff007f, -3px 0 #00e5ff; }
+    }
+
+    .loader-bar {
+      width: 300px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #00ff9d;
+      margin: 0 auto 1rem auto;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .loader-progress {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #00ff9d, #00e5ff, #ff007f);
+      box-shadow: 0 0 15px #00ff9d;
+      transition: width 0.1s linear;
+    }
+
+    /* NAVEGAÇÃO SUPERIOR */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(3, 3, 5, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 255, 157, 0.3);
+      z-index: 1000;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #00ff9d;
+      text-decoration: none;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px #00ff9d;
     }
 
     nav {
       display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(5, 8, 7, 0.95);
-      backdrop-filter: blur(5px);
-      border-bottom: 1px solid var(--border-color);
+      gap: 1rem;
       overflow-x: auto;
     }
 
-    nav button {
+    .nav-btn {
       background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 8px 16px;
-      border-radius: 4px;
+      border: 1px solid rgba(0, 255, 157, 0.3);
+      color: #888;
+      padding: 0.5rem 1rem;
       cursor: pointer;
-      font-weight: bold;
+      font-size: 0.8rem;
       letter-spacing: 1px;
-      transition: all 0.3s ease;
+      transition: all 0.3s;
+      border-radius: 4px;
       white-space: nowrap;
     }
 
-    nav button.active, nav button:hover {
-      background-color: var(--accent-green);
-      color: #000;
-      border-color: var(--accent-green);
-      box-shadow: 0 0 10px var(--accent-green);
+    .nav-btn:hover, .nav-btn.active {
+      color: #00ff9d;
+      border-color: #00ff9d;
+      box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+      background: rgba(0, 255, 157, 0.1);
     }
 
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 0 15px;
+    /* ESTRUTURA DAS SECÇÕES COM ANIMAÇÃO */
+    main {
+      padding-top: 80px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .tab-section {
       display: none;
+      width: 90%;
+      max-width: 1100px;
+      padding: 2.5rem;
+      background: rgba(10, 10, 18, 0.75);
+      border: 1px solid rgba(0, 255, 157, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+      margin: 2rem 0;
     }
 
     .tab-section.active {
       display: block;
+      animation: fadeInZoom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes fadeInZoom {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .section-title {
+      font-size: 2rem;
+      color: #fff;
+      border-left: 4px solid #00ff9d;
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    /* GRELHA & CARTÕES INTERATIVOS */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
     }
 
     .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--accent-green);
-      border-radius: 6px;
+      background: rgba(20, 20, 32, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
       padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .card h2, .card h3 {
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: #00ff9d;
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+    }
+
+    .card h3 {
       color: #fff;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
+      margin-bottom: 0.8rem;
+    }
+
+    .card p {
+      color: #aaa;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
     }
 
     .card-tag {
       display: inline-block;
-      font-size: 0.75rem;
-      border: 1px solid var(--accent-green);
-      color: var(--accent-green);
-      padding: 2px 6px;
-      margin-bottom: 10px;
+      font-size: 0.7rem;
+      color: #00e5ff;
+      border: 1px solid #00e5ff;
+      padding: 2px 8px;
       border-radius: 3px;
+      margin-bottom: 0.8rem;
     }
 
-    p {
-      color: var(--text-muted);
-      line-height: 1.6;
-      font-size: 0.95rem;
+    .btn-link {
+      display: inline-block;
+      color: #00ff9d;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 0.85rem;
+      transition: color 0.3s;
     }
 
-    audio {
-      width: 100%;
-      margin-top: 15px;
-      filter: invert(0.9) hue-rotate(80deg);
-      outline: none;
+    .btn-link:hover {
+      color: #ff007f;
+    }
+
+    /* RODAPÉ */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #555;
+      font-size: 0.8rem;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>XENON // 4D</h1>
-  </header>
+  <!-- CANVAS DO X GIGANTE 3D/4D NO FUNDO -->
+  <div id="canvas-container"></div>
 
-  <nav>
-    <button class="nav-btn active" onclick="openTab('inicio')">INÍCIO</button>
-    <button class="nav-btn" onclick="openTab('noticias')">NOTÍCIAS GAMING</button>
-    <button class="nav-btn" onclick="openTab('ost')">GAME OSTs</button>
-  </nav>
-
-  <div class="container">
-    <!-- INÍCIO -->
-    <section id="inicio" class="tab-section active">
-      <div class="card">
-        <h2>// BEM-VINDO AO XENON ARCADE</h2>
-        <p>Um ecossistema futurista focado no desenvolvimento de jogos, inteligência artificial avançada e cultura gamer. Navega pelos menus superiores para explorar cada secção interativa.</p>
+  <!-- ECRÃ DE CARREGAMENTO -->
+  <div id="cyber-loader">
+    <div class="loader-content">
+      <div class="glitch-title">XENON // ARCADE</div>
+      <div class="loader-bar">
+        <div class="loader-progress"></div>
       </div>
-      <div class="card">
-        <span class="card-tag">3D ENGINE</span>
-        <h3>Fundo Holográfico 4D</h3>
-        <p>Mexe o rato ou faz scroll para interagir com o ambiente cibernético.</p>
-      </div>
-    </section>
-
-    <!-- NOTÍCIAS -->
-    <section id="noticias" class="tab-section">
-      <div class="card">
-        <h2>// ÚLTIMAS ATUALIZAÇÕES</h2>
-        <p>Acompanha em tempo real as novidades sobre o desenvolvimento dos nossos projetos e lançamentos oficiais.</p>
-      </div>
-    </section>
-
-    <!-- GAME OSTs (LEITOR DE ÁUDIO CORRIGIDO) -->
-    <section id="ost" class="tab-section">
-      <div class="card">
-        <h2>// TRILHAS SONORAS (OSTs)</h2>
-        <p>Ouve abaixo as composições oficiais guardadas na pasta do projeto.</p>
-      </div>
-
-      <div class="card">
-        <span class="card-tag">TRACK 01</span>
-        <h3>Abaixo da Mesma Lua</h3>
-        <audio controls>
-          <source src="áudio/Abaixo da mesma lua.mp3" type="audio/mpeg">
-          O teu navegador não suporta o leitor de áudio.
-        </audio>
-      </div>
-
-      <div class="card">
-        <span class="card-tag">TRACK 02</span>
-        <h3>Druna Até Aos Céus</h3>
-        <audio controls>
-          <source src="áudio/Druna até aos ceus.mp3" type="audio/mpeg">
-          O teu navegador não suporta o leitor de áudio.
-        </audio>
-      </div>
-
-      <div class="card">
-        <span class="card-tag">TRACK 03</span>
-        <h3>Latarim D'Alma</h3>
-        <audio controls>
-          <source src="áudio/Latarim D'Alma .mp3" type="audio/mpeg">
-          O teu navegador não suporta o leitor de áudio.
-        </audio>
-      </div>
-
-      <div class="card">
-        <span class="card-tag">TRACK 04</span>
-        <h3>Aço Sob Sol Morto</h3>
-        <audio controls>
-          <source src="áudio/aco sob sol morto.mp3" type="audio/mpeg">
-          O teu navegador não suporta o leitor de áudio.
-        </audio>
-      </div>
-
-      <div class="card">
-        <span class="card-tag">TRACK 05</span>
-        <h3>Onde Se Tempo Se Perdeu</h3>
-        <audio controls>
-          <source src="áudio/onde se tempo se perdeu.mp3" type="audio/mpeg">
-          O teu navegador não suporta o leitor de áudio.
-        </audio>
-      </div>
-    </section>
+      <div style="color: #666; font-size: 0.8rem; letter-spacing: 2px;">CARREGANDO SISTEMA 4D... <span id="load-perc">0%</span></div>
+    </div>
   </div>
 
+  <!-- HEADER -->
+  <header>
+    <a href="#" class="logo">XENON // 4D</a>
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('inicio')">INÍCIO</button>
+      <button class="nav-btn" onclick="switchTab('noticias')">NOTÍCIAS GAMING</button>
+      <button class="nav-btn" onclick="switchTab('ost')">GAME OSTs</button>
+      <button class="nav-btn" onclick="switchTab('projetos')">MY PROJECTS</button>
+      <button class="nav-btn" onclick="switchTab('ia')">MY IA</button>
+      <button class="nav-btn" onclick="switchTab('gameplay')">GAMEPLAY</button>
+      <button class="nav-btn" onclick="switchTab('perfil')">MEU PERFIL</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 1. INÍCIO -->
+    <section id="inicio" class="tab-section active">
+      <h2 class="section-title">// BEM-VINDO AO XENON ARCADE</h2>
+      <p style="color: #ccc; font-size: 1.1rem; margin-bottom: 2rem;">
+        Um ecossistema futurista focado no desenvolvimento de jogos, inteligência artificial avançada e cultura gamer. Navega pelos menus superiores para explorar cada secção interativa.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">3D ENGINE</span>
+          <h3>Fundo Holográfico 4D</h3>
+          <p>Mexe o rato ou faz scroll no ecrã para veres o X Gigante tridimensional interagir em tempo real.</p>
+        </div>
+        <div class="card">
+          <span class="card-tag">CONTEÚDO</span>
+          <h3>Hub de Jogos & IA</h3>
+          <p>Notícias atualizadas, trilhas sonoras marcantes de games e projetos com algoritmos de IA.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. NOTÍCIAS MUNDO DOS GAMES -->
+    <section id="noticias" class="tab-section">
+      <h2 class="section-title">// NOTÍCIAS DO MUNDO DOS GAMES</h2>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">TECNOLOGIA</span>
+          <h3>Nova Geração de Motores Gráficos</h3>
+          <p>Os novos avanços em Ray Tracing e iluminação global dinâmica mudam a criação de mundos abertos em 2026.</p>
+          <a href="#" class="btn-link">LER MAIS &rarr;</a>
+        </div>
+        <div class="card">
+          <span class="card-tag">ESPORTS</span>
+          <h3>Lançamentos Mais Aguardados</h3>
+          <p>Acompanha os títulos competitivos que estão a dominar as arenas e os torneios mundiais.</p>
+          <a href="#" class="btn-link">LER MAIS &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. OST DE GAME (LEITOR FUTURISTA INTEGRADO) -->
+    <section id="ost" class="tab-section">
+      <h2 class="section-title">// GAMING SOUNDTRACKS (OSTs)</h2>
+      <p style="color: #aaa; margin-bottom: 1.5rem;">Trilhas sonoras originais e lançamentos oficiais do Xenon Arcade.</p>
+      
+      <!-- FAIXA 1 -->
+      <div class="card" style="margin-bottom: 1.5rem; border-left: 4px solid #ff007f;">
+        <span class="card-tag" style="color: #ff007f; border-color: #ff007f;">LANÇAMENTO OFICIAL</span>
+        <h3 style="margin-top: 0.5rem; color: #fff;">01. Xenon Cyber Track</h3>
+        <p style="color: #00e5ff; font-size: 0.85rem; margin-bottom: 1rem;">Estilo: Synthwave / Cyberpunk OST</p>
+        
+        <!-- LEITOR DE ÁUDIO NATIVO COM ESTILO CYBERPUNK -->
+        <audio controls style="width: 100%; border-radius: 6px; filter: invert(0.9) hue-rotate(120deg); outline: none;">
+          <source src="musica1.mp3" type="audio/mpeg">
+          O teu navegador não suporta o leitor de áudio.
+        </audio>
+      </div>
+
+      <!-- FAIXA 2 -->
+      <div class="card" style="opacity: 0.6;">
+        <span class="card-tag">EM BREVE</span>
+        <h3>02. Cybercity Overdrive</h3>
+        <p>Próxima faixa em produção...</p>
+      </div>
+    </section>
+
+    <!-- 4. MY PROJECT -->
+    <section id="projetos" class="tab-section">
+      <h2 class="section-title">// MY PROJECTS</h2>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">WEBGL / THREE.JS</span>
+          <h3>Xenon Engine 3D</h3>
+          <p>Motor de renderização leve em JavaScript para carregar ambientes tridimensionais no navegador.</p>
+          <a href="https://github.com/wwwcarlossenin03-ship-it" target="_blank" class="btn-link">REPOSITÓRIO &rarr;</a>
+        </div>
+        <div class="card">
+          <span class="card-tag">GAME DEV</span>
+          <h3>Retro Arcade Simulator</h3>
+          <p>Emulador em browser focado na experiência dos arcades clássicos dos anos 80 e 90.</p>
+          <a href="https://github.com/wwwcarlossenin03-ship-it" target="_blank" class="btn-link">VER PROJETO &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. MY IA -->
+    <section id="ia" class="tab-section">
+      <h2 class="section-title">// MY IA & INTELIGÊNCIA ARTIFICIAL</h2>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">LLM / GAMEPLAY</span>
+          <h3>NPCs com Comportamento Dinâmico</h3>
+          <p>Algoritmos de inteligência artificial que geram diálogos e decisões em tempo real dentro dos jogos.</p>
+          <a href="#" class="btn-link">DETALHES &rarr;</a>
+        </div>
+        <div class="card">
+          <span class="card-tag">NEURAL NET</span>
+          <h3>Procedural World Generator</h3>
+          <p>Rede neuronal treinada para criar cenários e mapas 3D de forma totalmente autónoma.</p>
+          <a href="#" class="btn-link">DETALHES &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. GAMEPLAY (DEMONSTRAÇÕES E VÍDEOS) -->
+    <section id="gameplay" class="tab-section">
+      <h2 class="section-title">// GAMEPLAY & DEMONSTRAÇÕES</h2>
+      <p style="color: #aaa; margin-bottom: 1.5rem;">Vídeos de testes de mecânicas, trailers e gameplays oficiais.</p>
+
+      <div class="grid">
+        <!-- VÍDEO MP4 LOCAL -->
+        <div class="card">
+          <span class="card-tag">LOCAL CLIP (.MP4)</span>
+          <h3>01. Short Mechanics Test</h3>
+          <p>Demonstração de movimento e física 3D.</p>
+
+          <video controls style="width: 100%; border-radius: 6px; border: 1px solid rgba(0,255,157,0.3);">
+            <source src="video1.mp4" type="video/mp4">
+            O teu navegador não suporta a reprodução deste vídeo.
+          </video>
+        </div>
+
+        <!-- VÍDEO YOUTUBE EMBED -->
+        <div class="card">
+          <span class="card-tag">YOUTUBE DEMO</span>
+          <h3>02. Trailer Oficial</h3>
+          <p>Apresentação do ecossistema Xenon.</p>
+          <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid rgba(0,255,157,0.3);">
+            <iframe 
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+              title="YouTube video player" 
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. MEU PERFIL -->
+    <section id="perfil" class="tab-section">
+      <h2 class="section-title">// MEU PERFIL DO DESENVOLVEDOR</h2>
+      <div style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+        <div style="width: 90px; height: 90px; border-radius: 50%; border: 2px solid #00ff9d; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; background: #0a0a10;">
+          👾
+        </div>
+        <div>
+          <h3 style="color: #fff; font-size: 1.5rem;">Carlos Senin</h3>
+          <p style="color: #00e5ff;">Criador do Xenon Arcade & Developer Gamer</p>
+        </div>
+      </div>
+      <p style="color: #ccc; margin-bottom: 1.5rem;">
+        Desenvolvedor e entusiasta da criação de conteúdos interativos, unindo web avançada, IA e design de videojogos.
+      </p>
+      <div style="display: flex; gap: 1rem;">
+        <a href="https://github.com/wwwcarlossenin03-ship-it" target="_blank" class="nav-btn" style="text-decoration: none;">GITHUB</a>
+        <a href="mailto:www.carlossenin03@gmail.com" class="nav-btn" style="text-decoration: none; border-color: #00e5ff; color: #00e5ff;">CONTACTAR</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 XENON ARCADE 4D // ALL RIGHTS RESERVED</p>
+  </footer>
+
+  <!-- SCRIPTS DA ANIMAÇÃO E SISTEMA DE ABAS -->
   <script>
-    function openTab(tabName) {
-      const sections = document.querySelectorAll('.tab-section');
-      const buttons = document.querySelectorAll('.nav-btn');
+    // 1. SISTEMA DE LOADER
+    window.addEventListener('DOMContentLoaded', () => {
+      let progress = 0;
+      const progressBar = document.querySelector('.loader-progress');
+      const percText = document.getElementById('load-perc');
+      const loader = document.getElementById('cyber-loader');
 
-      sections.forEach(sec => sec.classList.remove('active'));
-      buttons.forEach(btn => btn.classList.remove('active'));
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 8;
+        if (progress > 100) progress = 100;
+        progressBar.style.width = progress + '%';
+        percText.innerText = progress + '%';
 
-      document.getElementById(tabName).classList.add('active');
-      event.currentTarget.classList.add('active');
+        if (progress === 100) {
+          clearInterval(interval);
+          setTimeout(() => { loader.classList.add('hidden'); }, 300);
+        }
+      }, 60);
+    });
+
+    // 2. SISTEMA DE TROCA DE SECÇÕES COM CORES DIVERSIFICADAS
+    const tabThemeColors = {
+      inicio: 0x00ff9d,    // Verde Neon
+      noticias: 0x00e5ff,  // Azul Ciano
+      ost: 0xff007f,       // Rosa Cyberpunk
+      projetos: 0x9d00ff,  // Roxo Neon
+      ia: 0xffff00,        // Amarelo Neon
+      gameplay: 0xff3300,  // Laranja Quente
+      perfil: 0x00ff9d     // Verde
+    };
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+      const selectedTab = document.getElementById(tabId);
+      if(selectedTab) selectedTab.classList.add('active');
+
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
+
+      // Altera a cor do X Gigante 3D consoante a aba selecionada
+      if (xMesh && tabThemeColors[tabId]) {
+        xMesh.material.color.setHex(tabThemeColors[tabId]);
+      }
     }
+
+    // 3. CRIAÇÃO DO X GIGANTE 3D/4D (THREE.JS)
+    let scene, camera, renderer, xMesh;
+    let mouseX = 0, mouseY = 0;
+
+    function init3D() {
+      const container = document.getElementById('canvas-container');
+      
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 8;
+
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(renderer.domElement);
+
+      // Criar a Geometria em Forma de X Futurista
+      const group = new THREE.Group();
+      const material = new THREE.MeshBasicMaterial({ 
+        color: 0x00ff9d, 
+        wireframe: true 
+      });
+
+      const barGeo = new THREE.BoxGeometry(1.5, 7, 0.8);
+      
+      const bar1 = new THREE.Mesh(barGeo, material);
+      bar1.rotation.z = Math.PI / 4;
+      
+      const bar2 = new THREE.Mesh(barGeo, material);
+      bar2.rotation.z = -Math.PI / 4;
+
+      group.add(bar1);
+      group.add(bar2);
+
+      xMesh = group;
+      scene.add(xMesh);
+
+      // Partículas flutuantes no fundo
+      const particlesGeo = new THREE.BufferGeometry();
+      const count = 300;
+      const positions = new Float32Array(count * 3);
+
+      for(let i=0; i<count*3; i++) {
+        positions[i] = (Math.random() - 0.5) * 20;
+      }
+      particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const particlesMat = new THREE.PointsMaterial({ size: 0.05, color: 0x00e5ff });
+      const particles = new THREE.Points(particlesGeo, particlesMat);
+      scene.add(particles);
+
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Rotação contínua do X
+      if (xMesh) {
+        xMesh.rotation.x += 0.005;
+        xMesh.rotation.y += 0.008;
+
+        // Movimento ao mexer o rato/ecrã
+        xMesh.position.x += (mouseX * 2 - xMesh.position.x) * 0.05;
+        xMesh.position.y += (-mouseY * 2 - xMesh.position.y) * 0.05;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // Interação com o rato e scroll
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) - 0.5;
+      mouseY = (e.clientY / window.innerHeight) - 0.5;
+    });
+
+    window.addEventListener('scroll', () => {
+      if (xMesh) {
+        xMesh.rotation.z = window.scrollY * 0.002;
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    init3D();
   </script>
 </body>
 </html>
