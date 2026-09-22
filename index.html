@@ -249,18 +249,6 @@
       color: #ff007f;
     }
 
-    /* PLAYLIST DE OST */
-    .ost-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 1rem;
-      border-radius: 6px;
-      margin-bottom: 0.8rem;
-      border-left: 3px solid #ff007f;
-    }
-
     /* RODAPÉ */
     footer {
       text-align: center;
@@ -340,25 +328,29 @@
       </div>
     </section>
 
-    <!-- 3. OST DE GAME -->
+    <!-- 3. OST DE GAME (LEITOR FUTURISTA INTEGRADO) -->
     <section id="ost" class="tab-section">
       <h2 class="section-title">// GAMING SOUNDTRACKS (OSTs)</h2>
-      <p style="color: #aaa; margin-bottom: 1.5rem;">Trilhas sonoras icónicas do universo cyberpunk e retro-futurista.</p>
+      <p style="color: #aaa; margin-bottom: 1.5rem;">Trilhas sonoras originais e lançamentos oficiais do Xenon Arcade.</p>
       
-      <div class="ost-item">
-        <div>
-          <strong style="color: #fff;">01. Cyberpunk Cybercity Theme</strong>
-          <p style="color: #888; font-size: 0.8rem;">Sintetizadores & Beats Eletrónicos</p>
-        </div>
-        <button class="nav-btn" style="color: #ff007f; border-color: #ff007f;">▶ PLAY</button>
+      <!-- FAIXA 1 -->
+      <div class="card" style="margin-bottom: 1.5rem; border-left: 4px solid #ff007f;">
+        <span class="card-tag" style="color: #ff007f; border-color: #ff007f;">LANÇAMENTO OFICIAL</span>
+        <h3 style="margin-top: 0.5rem; color: #fff;">01. Xenon Cyber Track</h3>
+        <p style="color: #00e5ff; font-size: 0.85rem; margin-bottom: 1rem;">Estilo: Synthwave / Cyberpunk OST</p>
+        
+        <!-- LEITOR DE ÁUDIO NATIVO COM ESTILO CYBERPUNK -->
+        <audio controls style="width: 100%; border-radius: 6px; filter: invert(0.9) hue-rotate(120deg); outline: none;">
+          <source src="musica1.mp3" type="audio/mpeg">
+          O teu navegador não suporta o leitor de áudio.
+        </audio>
       </div>
 
-      <div class="ost-item">
-        <div>
-          <strong style="color: #fff;">02. Neon Arcade Overdrive</strong>
-          <p style="color: #888; font-size: 0.8rem;">Synthwave / Retro Gaming</p>
-        </div>
-        <button class="nav-btn" style="color: #ff007f; border-color: #ff007f;">▶ PLAY</button>
+      <!-- FAIXA 2 -->
+      <div class="card" style="opacity: 0.6;">
+        <span class="card-tag">EM BREVE</span>
+        <h3>02. Cybercity Overdrive</h3>
+        <p>Próxima faixa em produção...</p>
       </div>
     </section>
 
@@ -400,15 +392,37 @@
       </div>
     </section>
 
-    <!-- 6. GAMEPLAY -->
+    <!-- 6. GAMEPLAY (DEMONSTRAÇÕES E VÍDEOS) -->
     <section id="gameplay" class="tab-section">
       <h2 class="section-title">// GAMEPLAY & DEMONSTRAÇÕES</h2>
+      <p style="color: #aaa; margin-bottom: 1.5rem;">Vídeos de testes de mecânicas, trailers e gameplays oficiais.</p>
+
       <div class="grid">
+        <!-- VÍDEO MP4 LOCAL -->
         <div class="card">
-          <span class="card-tag">VIDEO DEMO</span>
-          <h3>Speedrun & Mechanics Test</h3>
-          <p>Demonstração de mecânicas de movimento avançadas em motores de jogo 3D.</p>
-          <a href="#" class="btn-link">VER DEMO &rarr;</a>
+          <span class="card-tag">LOCAL CLIP (.MP4)</span>
+          <h3>01. Short Mechanics Test</h3>
+          <p>Demonstração de movimento e física 3D.</p>
+
+          <video controls style="width: 100%; border-radius: 6px; border: 1px solid rgba(0,255,157,0.3);">
+            <source src="video1.mp4" type="video/mp4">
+            O teu navegador não suporta a reprodução deste vídeo.
+          </video>
+        </div>
+
+        <!-- VÍDEO YOUTUBE EMBED -->
+        <div class="card">
+          <span class="card-tag">YOUTUBE DEMO</span>
+          <h3>02. Trailer Oficial</h3>
+          <p>Apresentação do ecossistema Xenon.</p>
+          <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid rgba(0,255,157,0.3);">
+            <iframe 
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+              title="YouTube video player" 
+              allowfullscreen>
+            </iframe>
+          </div>
         </div>
       </div>
     </section>
@@ -461,7 +475,7 @@
       }, 60);
     });
 
-    // 2. SISTEMA DE TROCA DE SECÇÕES COM CORES/AMBIENTE DIVERSIFICADO
+    // 2. SISTEMA DE TROCA DE SECÇÕES COM CORES DIVERSIFICADAS
     const tabThemeColors = {
       inicio: 0x00ff9d,    // Verde Neon
       noticias: 0x00e5ff,  // Azul Ciano
@@ -479,7 +493,9 @@
       const selectedTab = document.getElementById(tabId);
       if(selectedTab) selectedTab.classList.add('active');
 
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
 
       // Altera a cor do X Gigante 3D consoante a aba selecionada
       if (xMesh && tabThemeColors[tabId]) {
@@ -524,7 +540,7 @@
       xMesh = group;
       scene.add(xMesh);
 
-      // Adicionar partículas flutuantes no fundo
+      // Partículas flutuantes no fundo
       const particlesGeo = new THREE.BufferGeometry();
       const count = 300;
       const positions = new Float32Array(count * 3);
