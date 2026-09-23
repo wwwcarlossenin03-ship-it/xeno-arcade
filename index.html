@@ -249,6 +249,116 @@
       color: #ff007f;
     }
 
+    /* ESTILOS DA CAIXA DE CHAT FUTURISTA (XENO CORE AI) */
+    .xeno-chat-container {
+      width: 100%;
+      background: rgba(13, 15, 23, 0.85);
+      border: 1px solid #00ff9d;
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 2rem;
+    }
+
+    .xeno-chat-header {
+      background: rgba(20, 24, 36, 0.9);
+      padding: 12px 16px;
+      border-bottom: 1px solid #00ff9d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .xeno-chat-header h3 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 1.5px;
+      color: #00ff9d;
+      text-transform: uppercase;
+    }
+
+    .xeno-status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #00ff9d;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #00ff9d;
+    }
+
+    .xeno-chat-messages {
+      height: 300px;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(5, 6, 10, 0.6);
+    }
+
+    .xeno-msg {
+      padding: 8px 12px;
+      border-radius: 4px;
+      max-width: 85%;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .xeno-user {
+      align-self: flex-end;
+      background: rgba(255, 0, 127, 0.15);
+      border: 1px solid #ff007f;
+      color: #ff80ab;
+    }
+
+    .xeno-bot {
+      align-self: flex-start;
+      background: rgba(0, 255, 157, 0.1);
+      border: 1px solid #00ff9d;
+      color: #80ffe1;
+    }
+
+    .xeno-chat-input-area {
+      display: flex;
+      padding: 10px;
+      background: rgba(20, 24, 36, 0.9);
+      border-top: 1px solid rgba(0, 255, 157, 0.3);
+      gap: 8px;
+    }
+
+    .xeno-chat-input-area input {
+      flex: 1;
+      background: #080a10;
+      border: 1px solid #00ff9d;
+      color: #00ff9d;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 12px;
+      outline: none;
+      border-radius: 4px;
+    }
+
+    .xeno-chat-input-area input::placeholder {
+      color: rgba(0, 255, 157, 0.4);
+    }
+
+    .xeno-chat-input-area button {
+      background: #00ff9d;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .xeno-chat-input-area button:hover {
+      background: #ff007f;
+      color: #fff;
+      box-shadow: 0 0 10px #ff007f;
+    }
+
     /* RODAPÉ */
     footer {
       text-align: center;
@@ -445,6 +555,25 @@
           <h3>Procedural World Generator</h3>
           <p>Rede neuronal treinada para criar cenários e mapas 3D de forma totalmente autónoma.</p>
           <a href="#" class="btn-link">DETALHES &rarr;</a>
+        </div>
+      </div>
+
+      <!-- CHAT INTERATIVO FUTURISTA DO XENO CORE AI -->
+      <div class="xeno-chat-container">
+        <div class="xeno-chat-header">
+          <span class="xeno-status-dot"></span>
+          <h3>XENO CORE // AI INTERFACE</h3>
+        </div>
+        
+        <div class="xeno-chat-messages" id="xenoMessages">
+          <div class="xeno-msg xeno-bot">
+            <strong>Xeno Core:</strong> Saudações. Sistema operacional e pronto para processar comandos.
+          </div>
+        </div>
+
+        <div class="xeno-chat-input-area">
+          <input type="text" id="xenoInput" placeholder="INSERIR COMANDO OU PERGUNTA..." onkeypress="tratarTecla(event)">
+          <button onclick="enviarMensagemXeno()">ENVIAR</button>
         </div>
       </div>
     </section>
@@ -648,6 +777,71 @@
     });
 
     init3D();
+
+    // 4. FUNÇÕES DE LIGAÇÃO COM O XENO CORE AI (HUGGING FACE)
+    async function enviarMensagemXeno() {
+      const inputEl = document.getElementById("xenoInput");
+      const messagesContainer = document.getElementById("xenoMessages");
+      const texto = inputEl.value.trim();
+
+      if (!texto) return;
+
+      // 1. Mostra a mensagem do utilizador
+      const userMsgDiv = document.createElement("div");
+      userMsgDiv.className = "xeno-msg xeno-user";
+      userMsgDiv.innerHTML = `<strong>Tu:</strong> ${texto}`;
+      messagesContainer.appendChild(userMsgDiv);
+
+      inputEl.value = "";
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      // 2. Indicador temporário
+      const botMsgDiv = document.createElement("div");
+      botMsgDiv.className = "xeno-msg xeno-bot";
+      botMsgDiv.innerHTML = `<strong>Xeno Core:</strong> [PROCESSANDO...]`;
+      messagesContainer.appendChild(botMsgDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      try {
+        // 3. Comunicação com a API do Hugging Face
+        const response = await fetch("https://carlossenin-xeno-core-ai.hf.space/call/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            data: [texto, []]
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.eventId) {
+          const eventResponse = await fetch(`https://carlossenin-xeno-core-ai.hf.space/call/predict/${data.eventId}`);
+          const textResult = await eventResponse.text();
+          
+          const match = textResult.match(/data: \["(.*)"\]/);
+          if (match && match[1]) {
+            botMsgDiv.innerHTML = `<strong>Xeno Core:</strong> ${match[1]}`;
+          } else {
+            botMsgDiv.innerHTML = `<strong>Xeno Core:</strong> Sinal processado com sucesso.`;
+          }
+        } else if (data.data && data.data[0]) {
+          botMsgDiv.innerHTML = `<strong>Xeno Core:</strong> ${data.data[0]}`;
+        } else {
+          botMsgDiv.innerHTML = `<strong>Xeno Core:</strong> Resposta recebida do núcleo.`;
+        }
+      } catch (err) {
+        botMsgDiv.innerHTML = `<strong>Xeno Core:</strong> Erro ao ligar ao servidor de IA.`;
+        console.error("Erro Xeno AI:", err);
+      }
+
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function tratarTecla(e) {
+      if (e.key === "Enter") {
+        enviarMensagemXeno();
+      }
+    }
   </script>
 </body>
 </html>
